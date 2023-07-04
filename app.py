@@ -57,6 +57,12 @@ def similarity():
     return jsonify(search_response.to_dict())
 
 
+
+@ app.route("/show")
+def show_file(video_file: str):
+    return app.send_static_file(video_file)
+
+
 def text_embeddings(text: str):
     inputs = clip_processor(text=text, return_tensors="pt", padding=True)    
     text_embeddings = clip_model.get_text_features(**inputs)
