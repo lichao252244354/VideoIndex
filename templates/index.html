@@ -94,7 +94,7 @@
             margin: 54px 66px;
             border-radius: 12px;
             background-color: #151719;
-            /* opacity: 0; */
+            visibility: hidden;
         }
 
         #result {
@@ -139,44 +139,76 @@
             font-size: 14px;
             line-height: 24px;
         }
+
         .avatar {
             padding-top: 15px;
         }
+
         .avatar-img-wrap {
             margin-right: 10px;
             margin-top: 7px;
         }
+
         .avatar-img {
             width: 100%;
+        }
+
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            overflow: hidden;
+            transform: translate(-50%, -50%);
+            visibility: hidden;
+        }
+
+        .loading img {
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
 
 <body>
+    <div id="loading" class="loading">
+        <img src="https://h73k112868.yicp.fun/data/image/loading.gif" alt="">
+    </div>
     <div class="content">
         <div class="search-box">
             <span class="title-h1">Magaic Clip</span>
             <!-- <input type="text" id="query-input" placeholder="Search you want"></input> -->
             <div class="ipt">
                 <input type="text" id="query-input" placeholder="Search you want"></input>
-                <img src="./image/search.png" alt="" class="search-icon">
+                <img src="https://h73k112868.yicp.fun/data/image/search.png" alt="" class="search-icon">
             </div>
             <button id="query-button">Search</button>
             <!-- <button id="surprise-button">Surprise Me!</button> -->
         </div>
-        <div class="movie-container">
-            <div id="result">
-            </div>
+        <div class="movie-container" id="movie-container">
+            <div id="result"> </div>
             <!-- <div class="loading"><img src="../ai video/image/loading.gif" alt=""></div> -->
         </div>
     </div>
     <script>
+        const pageCache = { loading: false }
+        const resultView = document.getElementById('movie-container')
+        const loadingView = document.getElementById('loading')
         function submitSearch(query) {
+            if (pageCache.loading) {
+                return
+            }
             clearMediaEvent()
+            pageCache.loading = true
+            loadingView.style = 'visibility: inherit;'
             const xhr = new XMLHttpRequest();
             xhr.open("GET", "https://h73k112868.yicp.fun/api/search?q=" + query);
             xhr.send();
             xhr.onload = function () {
+                loadingView.style = 'visibility: hidden;'
+                resultView.style = 'visibility: inherit;'
+                pageCache.loading = false
                 if (xhr.status === 200) {
                     const response = JSON.parse(xhr.responseText);
                     document.getElementById("result").innerHTML = response.matches.map(x => {
@@ -187,7 +219,7 @@
                             <video class="media-video" width="200" controls="controls" src="https://h73k112868.yicp.fun/data/${x.metadata.index_id}.mp4" preload="auto"></video>
                         </div>
                         <div class="avatar" style="display:flex">
-                           <div class="avatar-img-wrap" style="width: 40px;height:40px;border-radius:50%;overflow:hidden;"><img src="./image/avatar.png" class="avatar-img" /> </div>
+                           <div class="avatar-img-wrap" style="width: 40px;height:40px;border-radius:50%;overflow:hidden;"><img src="https://h73k112868.yicp.fun/data/image/avatar.png" class="avatar-img" /> </div>
                             <div><h3 class="title-h3">${x.metadata.scene_title}</h3>
                         <h3 class="title-h3">(${Math.round(x.metadata.start)}sec-${Math.round(x.metadata.end)}sec) </h3></div>
                             </div>
