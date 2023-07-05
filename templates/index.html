@@ -1,109 +1,246 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Natural Language Video Search</title>
-    <style>        
-        #result {
-            display: flex;          
-            margin-top: 20px;            
-            flex-wrap: wrap;
-            padding: 50px;
-        }
-        .search-box {
-            margin-top: 25px;
-            display: flex;
-            justify-content: center;
-        }
-        .movie {            
-            padding: 5px;
-            height: 100%;
-            flex: 1 1 30%;
-            max-width: 200px;
-            color: #1a1a1a;
-            background: rgb(84, 100,102);
-            border-radius: 5px;
-            margin: 10px;
-            height: 550px;
+    <title>Magaic Clip</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+
         }
 
-        .banner, .movie-container {
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: #151719;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.3);
+        }
+
+        html,
+        body {
             width: 100%;
-            display: flex;
-            justify-content: center;
-        }
-        .banner-text {
-            width: 60%;
+            height: 100%;
         }
 
-        @media (max-width: 768px) {
-            .movie {
-                flex-basis: 50%;
-            }
+        html {
+            background-color: rgb(29, 31, 34);
         }
-        
+
+        .content {
+            /* width: 1507px; */
+            margin: 0 auto;
+            color: #fff;
+        }
+
+        .search-box {
+            margin-top: 41px;
+            padding: 0 100px 0 82px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-icon {
+            position: absolute;
+            top: 50%;
+            right: 13px;
+            transform: translateY(-50%);
+            width: 39px;
+            height: 39px;
+        }
+
+        .title-h1 {
+            font-size: 36px;
+            line-height: 52px;
+        }
+
+        .ipt {
+            position: relative;
+            margin: 0 26px 0 43px;
+            flex: 1;
+        }
+
+        #query-input {
+            width: 100%;
+            font-size: 36px;
+            line-height: 66px;
+            text-indent: 28px;
+            color: #A59797;
+            border: 0;
+            border-radius: 12px;
+            outline: none;
+            background-color: #151719;
+        }
+
+        #query-button {
+            width: 114px;
+            height: 40px;
+            line-height: 40px;
+            background-color: #ff0000;
+            border: 0;
+            border-radius: 2px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .movie-container {
+            margin: 54px 66px;
+            border-radius: 12px;
+            background-color: #151719;
+            /* opacity: 0; */
+        }
+
+        #result {
+            padding: 33px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        #result .movie {
+            flex-basis: calc((100% - 84px) / 4);
+            margin-right: 28px;
+            margin-top: 28px;
+        }
+
+        #result .movie:nth-of-type(4n) {
+            margin-right: 0;
+        }
+
+        .media-video {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .video-wrapper {
+            width: 100%;
+            height: 160px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .link {
+            margin-left: 10px;
+            font-size: 12px;
+            line-height: 24px;
+            font-style: normal;
+            text-decoration: none;
+            color: #A59797;
+        }
+
+        .title-h3 {
+            font-size: 14px;
+            line-height: 24px;
+        }
+        .avatar {
+            padding-top: 15px;
+        }
+        .avatar-img-wrap {
+            margin-right: 10px;
+            margin-top: 7px;
+        }
+        .avatar-img {
+            width: 100%;
+        }
     </style>
 </head>
+
 <body>
-    <div class="banner">
-        <div class="banner-text">
-            <h1>Natural Language Movie Scene Search Engine</h1>
-            <p>
-            The goal of this project was to develop a natural language video search engine that could effectively search through large quantities of video data without relying on metadata like titles, descriptions, or audio transcriptions. The aim was to enable users to search for specific actions or scenes, such as closing and opening a door, and facilitate the comparison of these scenes across different videos.
-            <br/><br/>
-            The dataset for this particular tool is roughly ~30,000 scenes from <a href="https://www.imdb.com/chart/top/">imdbs top 250 movies</a>.
-            </p>
-    
-            <h2>Features</h2>
-            <ul>
-                <li>Natural Language Search</li>
-                <li>Scene Similarity Search</li>
-            </ul>
-        </div>        
+    <div class="content">
+        <div class="search-box">
+            <span class="title-h1">Magaic Clip</span>
+            <!-- <input type="text" id="query-input" placeholder="Search you want"></input> -->
+            <div class="ipt">
+                <input type="text" id="query-input" placeholder="Search you want"></input>
+                <img src="./image/search.png" alt="" class="search-icon">
+            </div>
+            <button id="query-button">Search</button>
+            <!-- <button id="surprise-button">Surprise Me!</button> -->
+        </div>
+        <div class="movie-container">
+            <div id="result">
+            </div>
+            <!-- <div class="loading"><img src="../ai video/image/loading.gif" alt=""></div> -->
+        </div>
     </div>
-
-    <div class="search-box">
-        <input type="text" id="query-input" value="A man smoking"></input>
-        <button id="query-button">Submit</button>
-        <button id="surprise-button">Surprise Me!</button>
-    </div>
-    <div class="movie-container">
-        <div id="result"></div>
-    </div>
-
     <script>
-        function submitSearch(query) {            
+        function submitSearch(query) {
+            clearMediaEvent()
             const xhr = new XMLHttpRequest();
-            xhr.open("GET", "/api/search?q=" + query);
-            xhr.onload = function() {
+            xhr.open("GET", "https://h73k112868.yicp.fun/api/search?q=" + query);
+            xhr.send();
+            xhr.onload = function () {
                 if (xhr.status === 200) {
                     const response = JSON.parse(xhr.responseText);
                     document.getElementById("result").innerHTML = response.matches.map(x => {
-                        const poster= x.metadata?.poster.split('@.')
+                        const poster = x.metadata?.poster.split('@.')
                         poster[1] = '._SX300_.jpg'
-                        
                         return `<div class="movie">
-                        <img src="${poster.join('@.')}" width="200" height="350"/>
-                        <h3>${x.metadata.scene_title}</h3>
-                        <h3>(${Math.round(x.metadata.start)}sec-${Math.round(x.metadata.end)}sec) <a target="_blank" href="https://youtu.be/${x.metadata?.index_id}?t=${Math.floor(x.metadata.start)}">View On YouTube</a> </h3>
-                        
-                        <button xattr="${x.id}" onclick="similarScenes(this)">Similar Scenes</button>
+                        <div class="video-wrapper">
+                            <video class="media-video" width="200" controls="controls" src="https://h73k112868.yicp.fun/data/${x.metadata.index_id}.mp4" preload="auto"></video>
+                        </div>
+                        <div class="avatar" style="display:flex">
+                           <div class="avatar-img-wrap" style="width: 40px;height:40px;border-radius:50%;overflow:hidden;"><img src="./image/avatar.png" class="avatar-img" /> </div>
+                            <div><h3 class="title-h3">${x.metadata.scene_title}</h3>
+                        <h3 class="title-h3">(${Math.round(x.metadata.start)}sec-${Math.round(x.metadata.end)}sec) </h3></div>
+                            </div>
+                        <!-- <button xattr="${x.id}" onclick="similarScenes(this)">Similar Scenes</button> -->
                     </div>`
                     }).join('')
+                    setTimeout(() => {
+                        setMediaEvent()
+                    }, 500)
                 }
             };
-            xhr.send();
         }
+        function clearMediaEvent() {
+            const videos = document.querySelectorAll('.media-video')
+            if (videos && videos.length) {
+                videos.forEach(item => {
+                    item.removeEventListener('play', handleMediaEvent)
+                })
+            }
+        }
+
+        function setMediaEvent() {
+            const videos = document.querySelectorAll('.media-video')
+            if (videos && videos.length) {
+                videos.forEach(item => {
+                    item.addEventListener('play', handleMediaEvent)
+                })
+            }
+        }
+
+        function handleMediaEvent(event) {
+            const videos = document.querySelectorAll('.media-video')
+            videos.forEach(item => {
+                if (item !== event.target) {
+                    item.pause()
+                }
+            })
+        }
+
+        // setTimeout(() => {
+        //     setMediaEvent()
+        // }, 500)
 
         function similarScenes(e) {
             const xhr = new XMLHttpRequest();
             xhr.open("GET", "/api/similarity?id=" + e.getAttribute('xattr'));
-            xhr.onload = function() {
+            xhr.onload = function () {
                 if (xhr.status === 200) {
                     const response = JSON.parse(xhr.responseText);
                     document.getElementById("result").innerHTML = response.matches.map(x => {
-                        const poster= x.metadata?.poster.split('@.')
+                        const poster = x.metadata?.poster.split('@.')
                         poster[1] = '._SX300_.jpg'
-                        
+
                         return `<div class="movie">
                         <img src="${poster.join('@.')}" width="200" height="350"/>
                         <h3>${x.metadata.scene_title}</h3>
@@ -117,19 +254,22 @@
             xhr.send();
         }
 
-        const surpriseQueries = ['crying baby', 'sleeping in bed', 'driving a car', 'man running', 'police chase', 'animals doing animal things']
-        document.getElementById("surprise-button").addEventListener("click", function() {
-            const rnd  = Math.round(Math.random() * surpriseQueries.length)
-            console.log(rnd, Math.random() * surpriseQueries.length, surpriseQueries.length)
+        // const surpriseQueries = ['crying baby', 'sleeping in bed', 'driving a car', 'man running', 'police chase', 'animals doing animal things']
+        // document.getElementById("surprise-button").addEventListener("click", function () {
+        //     const rnd = Math.round(Math.random() * surpriseQueries.length)
+        //     console.log(rnd, Math.random() * surpriseQueries.length, surpriseQueries.length)
 
-            document.getElementById("query-input").value = surpriseQueries[rnd]
-            submitSearch(surpriseQueries[rnd])
-        })
+        //     document.getElementById("query-input").value = surpriseQueries[rnd]
+        //     submitSearch(surpriseQueries[rnd])
+        // })
 
-        document.getElementById("query-button").addEventListener("click", function() {
+        document.getElementById("query-button").addEventListener("click", function () {
             const query = document.getElementById("query-input").value;
             submitSearch(query)
         });
+        // 2. This code loads the IFrame Player API code asynchronously.
+        var tag = document.createElement('script');
     </script>
 </body>
+
 </html>
