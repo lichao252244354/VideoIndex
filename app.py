@@ -3,6 +3,10 @@ import os
 from transformers import CLIPProcessor, CLIPModel
 
 from flask import Flask, jsonify, render_template, request
+import time
+import ffmpeg
+import os
+
 from flask_cors import CORS
 API_KEY = os.environ['PINEAPI']
 print("API_KEY",API_KEY)
@@ -14,7 +18,7 @@ clip_processor = CLIPProcessor.from_pretrained(
 clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 
 
-app = Flask(__name__)
+app = Flask(__name__,static_folder='static', static_url_path='/data')
 
 
 # r'/*' 是通配符，让本服务器所有的 URL 都允许跨域请求
@@ -40,8 +44,41 @@ def search():
         include_metadata=True,
         top_k=3,
     )
-    print("search_response = ",search_response)
-    return jsonify(search_response.to_dict())
+    movie_value = search_response["matches"]
+    movie_array = []
+
+    for var in movie_value:
+        var_temp = var.to_dict()
+        print("var_temp is ",var_temp)
+
+        start = var_temp["metadata"]["start"]
+        print("start is ",start)
+        start_time = time.strftime('%H:%M:%S', time.gmtime(start))
+        print("start_time is ",start_time)
+
+        end = var_temp["metadata"]["end"]
+        print("end is ",end)
+        end_time = time.strftime('%H:%M:%S', time.gmtime(end))
+        print("end_time is ",end_time)
+        input_file = "\"" + "./static/" + var_temp["metadata"]["index_id"]   + ".mp4" + "\""
+        out_file = "\"" + "./static/" + var_temp["id"] + ".mp4" + "\""
+        
+        if os.path.exists("./static/" + var_temp["id"] + ".mp4"):
+            cmd = f"ffmpeg  -i  {input_file} -ss {start_time}  -to {end_time} -c copy  -f {out_file}"
+        else:
+            cmd = f"ffmpeg  -i  {input_file} -ss {start_time}  -to {end_time} -c copy   {out_file}"
+        print("cmd is ",cmd)
+        os.system(cmd)
+        print("search_response is ",search_response.to_dict())
+        video_out = "https://h73k112868.yicp.fun/data/" + var_temp["id"] + ".mp4"
+        movie_array.append(video_out)
+
+        print("movie_array is ",movie_array)
+
+    search_response_dict = search_response.to_dict()
+    search_response_dict["index_video"] = movie_array
+    print(search_response_dict)
+    return jsonify(search_response_dict)
 
 @app.route('/api/similarity')
 def similarity():
@@ -57,10 +94,6 @@ def similarity():
     return jsonify(search_response.to_dict())
 
 
-
-@ app.route("/show")
-def show_file(video_file: str):
-    return app.send_static_file(video_file)
 
 
 def text_embeddings(text: str):
