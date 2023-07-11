@@ -211,12 +211,13 @@
                 pageCache.loading = false
                 if (xhr.status === 200) {
                     const response = JSON.parse(xhr.responseText);
-                    document.getElementById("result").innerHTML = response.matches.map(x => {
+                    const index_video = response.index_video || [];
+                    document.getElementById("result").innerHTML = response.matches.map((x, i) => {
                         const poster = x.metadata?.poster.split('@.')
                         poster[1] = '._SX300_.jpg'
                         return `<div class="movie">
                         <div class="video-wrapper">
-                            <video class="media-video" width="200" controls="controls" src="https://h73k112868.yicp.fun/data/${x.metadata.index_id}.mp4" preload="auto"></video>
+                            <video class="media-video" width="200" controls="controls" src="${index_video[i]}" preload="auto"></video>
                         </div>
                         <div class="avatar" style="display:flex">
                            <div class="avatar-img-wrap" style="width: 40px;height:40px;border-radius:50%;overflow:hidden;"><img src="https://h73k112868.yicp.fun/data/image/avatar.png" class="avatar-img" /> </div>
