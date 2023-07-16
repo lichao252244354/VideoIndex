@@ -3,7 +3,57 @@
 
 <head>
     <title>Magaic Clip</title>
+    <link rel="stylesheet" href="./src/video-js.min.css">
+    <script src="./src/jquery-1.11.1.min.js"></script>
+    <script src="./src/video.min.js"></script>
     <style>
+        /* video */
+        /* 隐藏video 全屏按钮 */
+        /* .media-video::-webkit-media-controls-fullscreen-button {
+            display: none;
+        } */
+
+        /* 隐藏video 播放按钮 */
+        /* .media-video::-webkit-media-controls-play-button {
+            display: none;
+        } */
+
+        /* 隐藏video 进度条 */
+        /* .media-video::-webkit-media-controls-timeline {
+            display: none;
+        } */
+
+        /* 隐藏video 音量按钮 */
+        /* .media-video::-webkit-media-controls-mute-button {
+            display: none;
+        } */
+
+        /* 隐藏video 音量的控制条 */
+        /* .media-video::-webkit-media-controls-volume-slider {
+            display: none;
+        } */
+
+        /* 隐藏video 观看的当前时间 */
+        .media-video::-webkit-media-controls-current-time-display {
+            display: none;
+        }
+
+        /* 隐藏video 剩余时间 */
+        .media-video::-webkit-media-controls-time-remaining-display {
+            display: none;
+        }
+
+        /* .media-video::-webkit-media-controls-toggle-closed-captions-button {
+            display: none;
+        } */
+
+        /* 隐藏video 所有控件 */
+        /* .media-video::-webkit-media-controls-enclosure {
+            display: none;
+        } */
+
+        /* base */
+
         * {
             margin: 0;
             padding: 0;
@@ -34,7 +84,6 @@
         }
 
         .content {
-            /* width: 1507px; */
             margin: 0 auto;
             color: #fff;
         }
@@ -168,6 +217,50 @@
             width: 100%;
             height: 100%;
         }
+
+        .modal {
+            display: none;
+        }
+
+        .modal.show {
+            display: block;
+            position: fixed;
+            z-index: 99;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .modal .bg {
+            position: absolute;
+            z-index: 100;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, .2);
+        }
+
+        .modal .video-dialog {
+            position: absolute;
+            z-index: 101;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 840px;
+            height: 480px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .modal .video-dialog .vjs-play-progress {
+            background-color: red;
+        }
+
+        .modal .video-dialog .vjs-play-progress::before {
+            display: none;
+        }
     </style>
 </head>
 
@@ -175,26 +268,216 @@
     <div id="loading" class="loading">
         <img src="https://h73k112868.yicp.fun/data/image/loading.gif" alt="">
     </div>
+    <div class="modal">
+        <div class="bg"></div>
+        <div class="video-dialog"></div>
+    </div>
     <div class="content">
         <div class="search-box">
             <span class="title-h1">Magaic Clip</span>
-            <!-- <input type="text" id="query-input" placeholder="Search you want"></input> -->
             <div class="ipt">
                 <input type="text" id="query-input" placeholder="Search you want"></input>
                 <img src="https://h73k112868.yicp.fun/data/image/search.png" alt="" class="search-icon">
             </div>
             <button id="query-button">Search</button>
-            <!-- <button id="surprise-button">Surprise Me!</button> -->
         </div>
         <div class="movie-container" id="movie-container">
             <div id="result"> </div>
-            <!-- <div class="loading"><img src="../ai video/image/loading.gif" alt=""></div> -->
         </div>
     </div>
     <script>
         const pageCache = { loading: false }
         const resultView = document.getElementById('movie-container')
         const loadingView = document.getElementById('loading')
+        const videoResultView = document.getElementById("result")
+        const queryButton = document.getElementById("query-button")
+        const videoList = []
+        const mockResponse = {
+            "matches": [
+                {
+                    "id": "Seapianist_5",
+                    "score": 0.257609785,
+                    "values": [],
+                    "metadata": {
+                        "end": 46.25454166666666,
+                        "index_id": "Seapianist",
+                        "movie_name": "b'sea pianist'",
+                        "poster": "https://www.youtube.com/",
+                        "release_year": "2020",
+                        "scene_no": 5.0,
+                        "scene_title": "pianist",
+                        "start": 20.478791666666666
+                    }
+                },
+                {
+                    "id": "Good.Luck to.You-Leo.Grande-clip_43",
+                    "score": 0.251969844,
+                    "values": [],
+                    "metadata": {
+                        "end": 211.13333333333333,
+                        "index_id": "Good.Luck to.You-Leo.Grande-clip",
+                        "movie_name": "b'Good.Luck'",
+                        "poster": "https://www.youtube.com/",
+                        "release_year": "2009",
+                        "scene_no": 43.0,
+                        "scene_title": "Grande-clip",
+                        "start": 204.96666666666667
+                    }
+                },
+                {
+                    "id": "Seapianist_1233",
+                    "score": 0.248038009,
+                    "values": [],
+                    "metadata": {
+                        "end": 6194.146291666666,
+                        "index_id": "Seapianist",
+                        "movie_name": "b'sea pianist'",
+                        "poster": "https://www.youtube.com/",
+                        "release_year": "2020",
+                        "scene_no": 1233.0,
+                        "scene_title": "pianist",
+                        "start": 6193.3121249999995
+                    }
+                },
+                {
+                    "id": "Seapianist_1233",
+                    "score": 0.248038009,
+                    "values": [],
+                    "metadata": {
+                        "end": 6194.146291666666,
+                        "index_id": "Seapianist",
+                        "movie_name": "b'sea pianist'",
+                        "poster": "https://www.youtube.com/",
+                        "release_year": "2020",
+                        "scene_no": 1233.0,
+                        "scene_title": "pianist",
+                        "start": 6193.3121249999995
+                    }
+                },
+                {
+                    "id": "Seapianist_1233",
+                    "score": 0.248038009,
+                    "values": [],
+                    "metadata": {
+                        "end": 6194.146291666666,
+                        "index_id": "Seapianist",
+                        "movie_name": "b'sea pianist'",
+                        "poster": "https://www.youtube.com/",
+                        "release_year": "2020",
+                        "scene_no": 1233.0,
+                        "scene_title": "pianist",
+                        "start": 6193.3121249999995
+                    }
+                }
+            ],
+            "namespace": "",
+            "index_video": [
+                "https://www.w3schools.com/html/movie.mp4",
+                "https://www.w3schools.com/html/movie.mp4",
+                "https://www.w3schools.com/html/movie.mp4",
+                "https://www.w3schools.com/html/movie.mp4",
+                "https://www.w3schools.com/html/movie.mp4",
+            ]
+        }
+        const zh_CN_language = {
+            "Play": "播放",
+            "Pause": "暂停",
+            "Current Time": "当前时间",
+            "Duration": "时长",
+            "Remaining Time": "剩余时间",
+            "Stream Type": "媒体流类型",
+            "LIVE": "直播",
+            "Loaded": "加载完成",
+            "Progress": "进度",
+            "Fullscreen": "全屏",
+            "Exit Fullscreen": "退出全屏",
+            "Picture-in-Picture": "画中画",
+            "Exit Picture-in-Picture": "退出画中画",
+            "Mute": "静音",
+            "Unmute": "开启音效",
+            "Playback Rate": "播放速度",
+            "Subtitles": "字幕",
+            "subtitles off": "关闭字幕",
+            "Captions": "内嵌字幕",
+            "captions off": "关闭内嵌字幕",
+            "Chapters": "节目段落",
+            "Close Modal Dialog": "关闭弹窗",
+            "Descriptions": "描述",
+            "descriptions off": "关闭描述",
+            "Audio Track": "音轨",
+            "You aborted the media playback": "视频播放被终止",
+            "A network error caused the media download to fail part-way.": "网络错误导致视频下载中途失败。",
+            "The media could not be loaded, either because the server or network failed or because the format is not supported.": "视频因格式不支持或者服务器或网络的问题无法加载。",
+            "The media playback was aborted due to a corruption problem or because the media used features your browser did not support.": "由于视频文件损坏或是该视频使用了你的浏览器不支持的功能，播放终止。",
+            "No compatible source was found for this media.": "无法找到此视频兼容的源。",
+            "The media is encrypted and we do not have the keys to decrypt it.": "视频已加密，无法解密。",
+            "Play Video": "播放视频",
+            "Close": "关闭",
+            "Modal Window": "弹窗",
+            "This is a modal window": "这是一个弹窗",
+            "This modal can be closed by pressing the Escape key or activating the close button.": "可以按ESC按键或启用关闭按钮来关闭此弹窗。",
+            ", opens captions settings dialog": ", 开启标题设置弹窗",
+            ", opens subtitles settings dialog": ", 开启字幕设置弹窗",
+            ", opens descriptions settings dialog": ", 开启描述设置弹窗",
+            ", selected": ", 选择",
+            "captions settings": "字幕设定",
+            "Audio Player": "音频播放器",
+            "Video Player": "视频播放器",
+            "Replay": "重新播放",
+            "Progress Bar": "进度条",
+            "Volume Level": "音量",
+            "subtitles settings": "字幕设定",
+            "descriptions settings": "描述设定",
+            "Text": "文字",
+            "White": "白",
+            "Black": "黑",
+            "Red": "红",
+            "Green": "绿",
+            "Blue": "蓝",
+            "Yellow": "黄",
+            "Magenta": "紫红",
+            "Cyan": "青",
+            "Background": "背景",
+            "Window": "窗口",
+            "Transparent": "透明",
+            "Semi-Transparent": "半透明",
+            "Opaque": "不透明",
+            "Font Size": "字体尺寸",
+            "Text Edge Style": "字体边缘样式",
+            "None": "无",
+            "Raised": "浮雕",
+            "Depressed": "压低",
+            "Uniform": "均匀",
+            "Dropshadow": "下阴影",
+            "Font Family": "字体库",
+            "Proportional Sans-Serif": "比例无细体",
+            "Monospace Sans-Serif": "单间隔无细体",
+            "Proportional Serif": "比例细体",
+            "Monospace Serif": "单间隔细体",
+            "Casual": "舒适",
+            "Script": "手写体",
+            "Small Caps": "小型大写字体",
+            "Reset": "重置",
+            "restore all settings to the default values": "恢复全部设定至预设值",
+            "Done": "完成",
+            "Caption Settings Dialog": "字幕设定窗口",
+            "Beginning of dialog window. Escape will cancel and close the window.": "打开对话窗口。Escape键将取消并关闭对话窗口",
+            "End of dialog window.": "结束对话窗口",
+            "Seek to live, currently behind live": "尝试直播，当前为延时播放",
+            "Seek to live, currently playing live": "尝试直播，当前为实时播放",
+            "progress bar timing: currentTime={1} duration={2}": "{1}/{2}",
+            "{1} is loading.": "正在加载 {1}。",
+            "No content": "无内容",
+            "Color": "颜色",
+            "Opacity": "不透明度",
+            "Text Background": "文本背景",
+            "Caption Area Background": "字幕区域背景",
+            "Skip forward {1} seconds": "快进 {1} 秒",
+            "Skip backward {1} seconds": "快退 {1} 秒"
+        }
+
+        videojs.addLanguage('zh-CN', zh_CN_language)
+
         function submitSearch(query) {
             if (pageCache.loading) {
                 return
@@ -205,34 +488,41 @@
             const xhr = new XMLHttpRequest();
             xhr.open("GET", "https://h73k112868.yicp.fun/api/search?q=" + query);
             xhr.send();
-            xhr.onload = function () {
+            xhr.onreadystatechange = function () {
                 loadingView.style = 'visibility: hidden;'
                 resultView.style = 'visibility: inherit;'
                 pageCache.loading = false
-                if (xhr.status === 200) {
-                    const response = JSON.parse(xhr.responseText);
-                    const index_video = response.index_video || [];
-                    document.getElementById("result").innerHTML = response.matches.map((x, i) => {
-                        const poster = x.metadata?.poster.split('@.')
-                        poster[1] = '._SX300_.jpg'
-                        return `<div class="movie">
-                        <div class="video-wrapper">
-                            <video class="media-video" width="200" controls="controls" src="${index_video[i]}" preload="auto"></video>
-                        </div>
-                        <div class="avatar" style="display:flex">
-                           <div class="avatar-img-wrap" style="width: 40px;height:40px;border-radius:50%;overflow:hidden;"><img src="https://h73k112868.yicp.fun/data/image/avatar.png" class="avatar-img" /> </div>
-                            <div><h3 class="title-h3">${x.metadata.scene_title}</h3>
-                        <h3 class="title-h3">(${Math.round(x.metadata.start)}sec-${Math.round(x.metadata.end)}sec) </h3></div>
-                            </div>
-                        <!-- <button xattr="${x.id}" onclick="similarScenes(this)">Similar Scenes</button> -->
-                    </div>`
-                    }).join('')
-                    setTimeout(() => {
-                        setMediaEvent()
-                    }, 500)
-                }
+                const response = !(xhr.readyState == 4 && xhr.status == 200) ? mockResponse : JSON.parse(xhr.responseText);
+                handleResponse(response)
             };
         }
+
+        function handleResponse(response) {
+            const index_video = response.index_video || [];
+            videoList.length = 0
+            videoList.push(...index_video)
+            videoResultView.innerHTML = response.matches.map((x, i) => {
+                const poster = x.metadata?.poster.split('@.')
+                poster[1] = '._SX300_.jpg'
+                return `
+                        <div class="movie">
+                            <div class="video-wrapper">
+                                <video class="media-video" mute controls src="${index_video[i]}" preload="auto" controlslist="nodownload noremoteplayback noplaybackrate" disablePictureInPicture></video>
+                            </div>
+                            <div class="avatar" style="display:flex">
+                                <div class="avatar-img-wrap" style="width: 40px;height:40px;border-radius:50%;overflow:hidden;"><img src="https://h73k112868.yicp.fun/data/image/avatar.png" class="avatar-img" /> </div>
+                                <div>
+                                    <h3 class="title-h3">${x.metadata.scene_title}</h3>
+                                    <h3 class="title-h3">(${Math.round(x.metadata.start)}sec-${Math.round(x.metadata.end)}sec) </h3>
+                                </div>
+                            </div>
+                        </div>`.trim()
+            }).join('')
+            setTimeout(() => {
+                setMediaEvent()
+            }, 500)
+        }
+
         function clearMediaEvent() {
             const videos = document.querySelectorAll('.media-video')
             if (videos && videos.length) {
@@ -260,48 +550,63 @@
             })
         }
 
-        // setTimeout(() => {
-        //     setMediaEvent()
-        // }, 500)
-
-        function similarScenes(e) {
-            const xhr = new XMLHttpRequest();
-            xhr.open("GET", "/api/similarity?id=" + e.getAttribute('xattr'));
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    const response = JSON.parse(xhr.responseText);
-                    document.getElementById("result").innerHTML = response.matches.map(x => {
-                        const poster = x.metadata?.poster.split('@.')
-                        poster[1] = '._SX300_.jpg'
-
-                        return `<div class="movie">
-                        <img src="${poster.join('@.')}" width="200" height="350"/>
-                        <h3>${x.metadata.scene_title}</h3>
-                        <h3>(${Math.round(x.metadata.start)}sec-${Math.round(x.metadata.end)}sec) <a target="_blank" href="https://youtu.be/${x.metadata?.index_id}?t=${Math.floor(x.metadata.start)}">View On YouTube</a> </h3>
-                        
-                        <button xattr="${x.id}" onclick="similarScenes(this)">Similar Scenes</button>
-                    </div>`
-                    }).join('')
-                }
-            };
-            xhr.send();
-        }
-
-        // const surpriseQueries = ['crying baby', 'sleeping in bed', 'driving a car', 'man running', 'police chase', 'animals doing animal things']
-        // document.getElementById("surprise-button").addEventListener("click", function () {
-        //     const rnd = Math.round(Math.random() * surpriseQueries.length)
-        //     console.log(rnd, Math.random() * surpriseQueries.length, surpriseQueries.length)
-
-        //     document.getElementById("query-input").value = surpriseQueries[rnd]
-        //     submitSearch(surpriseQueries[rnd])
-        // })
-
-        document.getElementById("query-button").addEventListener("click", function () {
+        queryButton.addEventListener("click", function () {
             const query = document.getElementById("query-input").value;
-            submitSearch(query)
+            query && submitSearch(query)
         });
-        // 2. This code loads the IFrame Player API code asynchronously.
-        var tag = document.createElement('script');
+
+        $('#query-input').on('keyup', function (e) {
+            if (e.keyCode === 13) {
+                const query = document.getElementById("query-input").value;
+                query && submitSearch(query)
+            }
+        })
+        let player
+        $('.movie-container').on('click', '.video-wrapper', function (e) {
+            $('.modal').addClass('show');
+            const target = $(this).find('.media-video')
+            if (target) {
+                const videoSrc = target.attr('src')
+                $('.video-dialog').html(`<video id="my-video" class="video-js" src="${videoSrc}"></video>`)
+
+                player = videojs(document.getElementById('my-video'), {
+                    controls: true, // 是否显示控制条
+                    fill: true,
+                    height: 480,
+                    language: 'zh-CN', // 初始化时设置语言，立即生效
+                    controlBar: {
+                        remainingTimeDisplay: {
+                            displayNegative: false
+                        }
+                    },
+                    playbackRates: [0.5, 1, 1.5, 2],
+                    sources: [
+                        {
+                            src: videoSrc,
+                            type: 'video/mp4',
+                        }
+                    ]
+                }, function () {
+                    console.log('视频可以播放了');
+                });
+            }
+            setTimeout(() => {
+                ;[].forEach.call($('.media-video'), function (item) {
+                    item.pause()
+                    console.log(item)
+                })
+            }, 500)
+        })
+
+        $('.bg').on('click', function () {
+            if ($('.modal').hasClass('show')) {
+                $('.modal').removeClass('show')
+                $('.video-dialog').html('')
+                // 销毁videojs
+                player.pause();
+                player.dispose();
+            }
+        })
     </script>
 </body>
 
