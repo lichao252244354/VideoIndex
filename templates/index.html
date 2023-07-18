@@ -266,7 +266,7 @@
 
 <body>
     <div id="loading" class="loading">
-        <img src="https://h73k112868.yicp.fun/data/image/loading.gif" alt="">
+        <img src="http://18.183.49.213:5000//data/image/loading.gif" alt="">
     </div>
     <div class="modal">
         <div class="bg"></div>
@@ -279,7 +279,7 @@
             <!-- <input type="text" id="query-input" placeholder="Search you want"></input> ddd-->
             <div class="ipt">
                 <input type="text" id="query-input" placeholder="Search you want"></input>
-                <img src="https://h73k112868.yicp.fun/data/image/search.png" alt="" class="search-icon">
+                <img src="http://18.183.49.213:5000//data/image/search.png" alt="" class="search-icon">
             </div>
             <button id="query-button">Search</button>
         </div>
@@ -488,7 +488,7 @@
             pageCache.loading = true
             loadingView.style = 'visibility: inherit;'
             const xhr = new XMLHttpRequest();
-            xhr.open("GET", "https://h73k112868.yicp.fun/api/search?q=" + query);
+            xhr.open("GET", "http://18.183.49.213:5000//api/search?q=" + query);
             xhr.send();
             xhr.onreadystatechange = function () {
                 loadingView.style = 'visibility: hidden;'
@@ -512,7 +512,7 @@
                                 <video class="media-video" mute controls src="${index_video[i]}" preload="auto" controlslist="nodownload noremoteplayback noplaybackrate" disablePictureInPicture></video>
                             </div>
                             <div class="avatar" style="display:flex">
-                                <div class="avatar-img-wrap" style="width: 40px;height:40px;border-radius:50%;overflow:hidden;"><img src="https://h73k112868.yicp.fun/data/image/avatar.png" class="avatar-img" /> </div>
+                                <div class="avatar-img-wrap" style="width: 40px;height:40px;border-radius:50%;overflow:hidden;"><img src="http://18.183.49.213:5000//data/image/avatar.png" class="avatar-img" /> </div>
                                 <div>
                                     <h3 class="title-h3">${x.metadata.scene_title}</h3>
                                     <h3 class="title-h3">(${Math.round(x.metadata.start)}sec-${Math.round(x.metadata.end)}sec) </h3>

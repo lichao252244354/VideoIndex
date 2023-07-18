@@ -70,7 +70,7 @@ def search():
         print("cmd is ",cmd)
         os.system(cmd)
         print("search_response is ",search_response.to_dict())
-        video_out = "https://h73k112868.yicp.fun/data/" + var_temp["id"] + ".mp4"
+        video_out = "http://18.183.49.213:5000//data/" + var_temp["id"] + ".mp4"
         movie_array.append(video_out)
 
         print("movie_array is ",movie_array)
